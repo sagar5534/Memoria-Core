@@ -1,6 +1,4 @@
-
 import { UserModel, User } from '../models/user.model';
-
 export class UserService {
 
   async findAll(): Promise<User[]> {
