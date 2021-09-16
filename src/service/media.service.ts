@@ -1,9 +1,8 @@
-import { MediaModel, Media } from '../models/media.model';
+import { MediaModel, Media } from "../models/media.model";
 
 export class MediaService {
-
   async findAll(): Promise<Media[]> {
-    return await MediaModel.find().sort('-creation_date').exec();
+    return await MediaModel.find().sort("-creation_date").exec();
   }
 
   async findOne(id: string): Promise<Media> {

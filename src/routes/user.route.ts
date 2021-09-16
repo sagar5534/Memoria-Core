@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { UserController } from '../controllers/user.controller';
+import { Router } from "express";
+import { UserController } from "../controllers/user.controller";
 
 const userRoutes = Router();
-const userController = new UserController()
+const userController = new UserController();
 
-userRoutes.get('/', userController.index);
+userRoutes.get("/", userController.index);
 
 export default userRoutes;

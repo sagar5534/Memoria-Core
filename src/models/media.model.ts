@@ -1,4 +1,4 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface Media {
@@ -14,7 +14,7 @@ export interface Media {
 // 2. Create a Schema corresponding to the document interface.
 const schema = new Schema<Media>({
   name: { type: String, required: true },
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  user: { type: Schema.Types.ObjectId, ref: "User" },
   assetId: { type: String, required: true },
   creation_date: { type: Date, required: true },
   isFavorite: { type: Boolean, required: false, default: false },
@@ -23,5 +23,4 @@ const schema = new Schema<Media>({
 });
 
 // 3. Create a Model.
-export const MediaModel = model<Media>('media', schema);
-
+export const MediaModel = model<Media>("media", schema);

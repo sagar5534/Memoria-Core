@@ -1,27 +1,21 @@
-import express, { Express, Request, Response } from "express";
-// import bodyParser from 'body-parser';
+import express, { Express } from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import routes from "./routes";
-import { boolean } from "webidl-conversions";
 // tslint:disable-next-line
-const punch = require('holepunch');
+const punch = require("holepunch");
 
 dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = process.env.DB_PATH;
-const REMOTE_ACCESS = (process.env.REMOTE_ACCESS === 'true');
+const REMOTE_ACCESS = process.env.REMOTE_ACCESS === "true";
 
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(routes);
 
 mongoose.connect(DB_PATH);
-
-// Setting up nat pmp
 
 if (REMOTE_ACCESS) {
   punch({

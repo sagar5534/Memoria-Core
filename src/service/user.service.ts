@@ -1,6 +1,5 @@
-import { UserModel, User } from '../models/user.model';
+import { UserModel, User } from "../models/user.model";
 export class UserService {
-
   async findAll(): Promise<User[]> {
     return await UserModel.find().exec();
   }
@@ -22,5 +21,4 @@ export class UserService {
   async delete(id: string): Promise<User> {
     return await UserModel.findByIdAndDelete(id).exec();
   }
-
 }
