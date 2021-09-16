@@ -18,6 +18,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "holepunch": "^1.0.0-alpha.3",
     "mongoose": "^6.0.6",
     "rimraf": "^3.0.2"
   },
