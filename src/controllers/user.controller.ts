@@ -9,22 +9,39 @@ export class UserController {
   }
 
   async find(req: Request, res: Response) {
-    res.send(await service.findAll());
-    // return await service.findOne(id);
+    if (!req.params.id) return res.sendStatus(400);
+    try {
+      res.send(await service.findOne(req.params.id));
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
 
   async create(req: Request, res: Response) {
-    res.send(await service.findAll());
-    // return await service.create(user);
+    if (!req.body.user) return res.sendStatus(400);
+    try {
+      res.send(await service.create(req.body.user));
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
 
   async update(req: Request, res: Response) {
-    res.send(await service.findAll());
-    // return await service.update(id, updateUser);
+    if (!req.params.id) return res.sendStatus(400);
+    if (!req.body.updatedUser) return res.sendStatus(400);
+    try {
+      res.send(await service.update(req.params.id, req.body.updatedUser));
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
 
   async delete(req: Request, res: Response) {
-    res.send(await service.findAll());
-    // return await service.delete(id);
+    if (!req.params.id) return res.sendStatus(400);
+    try {
+      res.send(await service.delete(req.params.id));
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
 }
