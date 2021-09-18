@@ -14,6 +14,7 @@ const REMOTE_ACCESS = process.env.REMOTE_ACCESS === "true";
 
 app.use(express.json());
 app.use(routes);
+app.use('/data', express.static('public'))
 
 mongoose.connect(DB_PATH);
 
