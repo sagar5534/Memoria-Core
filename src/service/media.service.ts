@@ -1,4 +1,5 @@
 import { MediaModel, Media } from "../models/media.model";
+import { Types } from "mongoose";
 
 export class MediaService {
   async findAll(): Promise<Media[]> {
@@ -6,7 +7,12 @@ export class MediaService {
   }
 
   async findOne(id: string): Promise<Media> {
-    return await MediaModel.findById(id).exec();
+    if (!Types.ObjectId.isValid(id)) {
+      return Promise.reject("Error")
+    }
+    const res = await MediaModel.findById(id).exec();
+    if (res) return res;
+    return Promise.reject("Not found")
   }
 
   async create(newMedia: Media): Promise<Media> {
@@ -15,11 +21,21 @@ export class MediaService {
     }).save();
   }
 
-  async update(id: string, newUser: Media): Promise<Media> {
-    return await MediaModel.findByIdAndUpdate(id, newUser).exec();
+  async update(id: string, newMedia: Media): Promise<Media> {
+    if (!Types.ObjectId.isValid(id)) {
+      return Promise.reject("Error")
+    }
+    const res = await MediaModel.findByIdAndUpdate(id, newMedia).exec();
+    if (res) return res;
+    return Promise.reject("Cannot Update")
   }
 
   async delete(id: string): Promise<Media> {
-    return await MediaModel.findByIdAndDelete(id).exec();
+    if (!Types.ObjectId.isValid(id)) {
+      return Promise.reject("Error")
+    }
+    const res = await MediaModel.findByIdAndDelete(id).exec();
+    if (res) return res;
+    return Promise.reject("Cannot Delete")
   }
 }
