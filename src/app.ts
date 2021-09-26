@@ -8,7 +8,7 @@ const punch = require("holepunch");
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const DB_PATH = process.env.DB_PATH;
 const REMOTE_ACCESS = process.env.REMOTE_ACCESS === "true";
 
@@ -22,7 +22,7 @@ mongoose.connect(DB_PATH);
 if (REMOTE_ACCESS) {
   punch({
     debug: false,
-    mappings: [{ internal: PORT, external: 3001, secure: false }],
+    mappings: [{ internal: 4000, external: 4000, secure: false }],
     upnp: true,
     pnp: true,
   });
