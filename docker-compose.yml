@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   mongo:
-    image : mongo
+    image : mongo:4.4.9
     environment:
       - PUID=1000
       - PGID=1000
