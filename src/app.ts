@@ -8,7 +8,7 @@ const punch = require("holepunch");
 dotenv.config();
 
 const app: Express = express();
-const PORT = 3000;
+const PORT = 8080;
 const DB_PATH = process.env.DB_PATH;
 const REMOTE_ACCESS = process.env.REMOTE_ACCESS === "true";
 

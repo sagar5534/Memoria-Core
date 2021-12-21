@@ -38,4 +38,15 @@ export class MediaService {
     if (res) return res;
     return Promise.reject("Cannot Delete")
   }
+
+  translateStrToBool(str: string): boolean {
+    if (!str) {
+      return false
+    } else {
+      if (str === 'true') {
+        return true
+      }
+      return false
+    }
+  }
 }
