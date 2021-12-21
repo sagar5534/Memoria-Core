@@ -15,6 +15,21 @@ export class MediaService {
     return Promise.reject("Not found")
   }
 
+  async findAllAssetIds(user: string): Promise<any> {
+    if (!Types.ObjectId.isValid(user)) {
+      return Promise.reject("Errornn")
+    }
+    const res = await MediaModel.find( { user }, {assetId: 1} ).exec();
+    if (res) {
+      return res.map( (asset) => {
+        return asset.assetId
+      });
+    } else {
+      return Promise.reject("Not found")
+    }
+  }
+
+
   async create(newMedia: Media): Promise<Media> {
     return await new MediaModel({
       ...newMedia,

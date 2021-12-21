@@ -11,6 +11,12 @@ export class MediaController {
     res.send(await service.findAll());
   }
 
+  async findAssetIds(req: Request, res: Response) {
+    if (!req.body.user) return res.sendStatus(400);
+    const user = req.body.user;
+    res.send(await service.findAllAssetIds(user));
+  }
+
   async find(req: Request, res: Response) {
     if (!req.params.id) return res.sendStatus(400);
     try {

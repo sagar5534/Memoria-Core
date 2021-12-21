@@ -12,8 +12,8 @@ const PORT = 8080;
 const DB_PATH = process.env.DB_PATH;
 const REMOTE_ACCESS = process.env.REMOTE_ACCESS === "true";
 
-app.use(express.json({ limit: '1gb' }));
-app.use(express.urlencoded({ extended: true, limit: '1gb' }));
+app.use(express.json({ limit: '3gb' }));
+app.use(express.urlencoded({ extended: true, limit: '3gb' }));
 app.use(routes);
 app.use('/data', express.static('public'))
 

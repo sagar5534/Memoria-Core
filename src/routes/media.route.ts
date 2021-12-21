@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { Callback } from "mongoose";
-import { FileFilterCallback, Multer, MulterError } from "multer";
 import { MediaController } from "../controllers/media.controller";
 import * as fs from 'fs';
 import * as path from 'path';
@@ -31,6 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 mediaRoutes.get("/", mediaController.index);
+mediaRoutes.post("/assets", mediaController.findAssetIds);
 mediaRoutes.get("/:id", mediaController.find);
 mediaRoutes.post("/", mediaController.create);
 mediaRoutes.put("/:id", mediaController.update);
