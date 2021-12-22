@@ -1,11 +1,14 @@
 import { MediaService } from "../service/media.service";
+import { ThumbnailService } from "../service/thumbnails.service";
 import { Request, Response } from "express";
 import { Media } from "../models/media.model";
 import { Types } from "mongoose";
-import * as fs from 'fs';
+import * as fs from "fs";
 // tslint:disable-next-line
-const moment = require('moment');
+const moment = require("moment");
+
 const service: MediaService = new MediaService();
+const thumbnailService: ThumbnailService = new ThumbnailService();
 export class MediaController {
   async index(req: Request, res: Response) {
     res.send(await service.findAll());
@@ -65,10 +68,10 @@ export class MediaController {
     const isFavorite = service.translateStrToBool(req.body.isFavorite);
     const isHidden = service.translateStrToBool(req.body.isHidden);
     const isLivePhoto = service.translateStrToBool(req.body.isLivePhoto);
-    let livePhotoPath = ""
+    let livePhotoPath = "";
 
     if (isLivePhoto && req.files.length > 1) {
-      livePhotoPath = ((req.files as any)[1].path);
+      livePhotoPath = (req.files as any)[1].path;
     }
 
     const temp: Media = {
@@ -78,37 +81,41 @@ export class MediaController {
       mediaType,
       mediaSubtype,
       creationDate: new Date(moment.unix(req.body.creationDate).toDate()),
-      modificationDate: new Date(moment.unix(req.body.modificationDate).toDate()),
+      modificationDate: new Date(
+        moment.unix(req.body.modificationDate).toDate()
+      ),
       duration,
       isFavorite,
       isHidden,
       isLivePhoto,
       path: (req.files as any)[0].path,
       thumbnail_path: "",
-      livePhoto_path: livePhotoPath
-    }
+      livePhoto_path: livePhotoPath,
+    };
 
     try {
-      for (const file of (req.files as any)) {
-        console.log('File Upload Success', file.path, req.body.assetId);
-      };
+      for (const file of req.files as any) {
+        console.log("File Upload Success", file.path, req.body.assetId);
+      }
 
-      await service.create(temp)
-      res.send(200)
-      console.log('Database Update Success', req.body.assetId);
-
+      await service.create(temp);
+      res.sendStatus(200);
+      console.log("Database Update Success", req.body.assetId);
+      thumbnailService.makeThumbnail(
+        (req.files as any)[0].path,
+        req.body.filename
+      );
     } catch (error) {
       console.error("File Upload Error", error);
 
-      for (const file of (req.files as any)) {
+      for (const file of req.files as any) {
         fs.unlink(file.path, (err) => {
-            if(err) return console.log(err);
-            console.warn('File Deleted', file.path, req.body.assetId);
+          if (err) return console.log(err);
+          console.warn("File Deleted", file.path, req.body.assetId);
         });
       }
 
       res.status(500).send(error);
     }
   }
-
 }
