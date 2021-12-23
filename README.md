@@ -2,12 +2,10 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+  <p align="center"><a href="https://github.com/sagar5534" target="_blank">Memoria</a> a photo library in your own cloud</p>
     <p align="center"></p>
 
 ## Description
-
-[Memoria](https://github.com/sagar5534/Memoria-core) The unlimited photo library
 
 We are under development :)
 
@@ -54,4 +52,4 @@ Happy to reciece help from other developers. Got an idea/feature then request it
 
 ## License
 
-Nest is [GPL-3.0](LICENSE).
+Nest is [GPL-3.0](LICENSE) Licensed.
