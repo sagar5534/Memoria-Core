@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+
+  mongo:
+    image : mongo:4.4.9
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - C:/data/db:/data/db
+    expose:
+      - 27017
+    restart: always
+
+  memoria:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on: 
+      - mongo
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    expose:
+      - "3000"
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - memoria
+    ports:
+      - "4000:4000"
+    restart: always
