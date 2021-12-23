@@ -1,40 +1,69 @@
-import { Schema, model, Types } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
+import { User } from './user.model';
 
-// 1. Create an interface representing a document in MongoDB.
-export interface Media {
-  user: Types.ObjectId;
-  assetId: string;
+export type MediaDocument = Media & Document;
+
+@Schema()
+export class Media {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User;
+
+  @Prop({ required: true })
   filename: string;
+
+  @Prop({ required: true })
+  assetId: string;
+
+  @Prop()
   mediaType: number;
-  mediaSubtype: number;
+
+  @Prop()
+  mediaSubType: number;
+
+  @Prop({ required: true })
   creationDate: Date;
+
+  @Prop()
   modificationDate: Date;
+
+  @Prop()
   duration: number;
+
+  @Prop({ default: false })
   isFavorite: boolean;
+
+  @Prop({ default: false })
   isHidden: boolean;
+
+  @Prop({ default: false })
   isLivePhoto: boolean;
+
+  @Prop({ required: true })
   path: string;
+
+  @Prop()
   thumbnail_path: string;
+
+  @Prop()
   livePhoto_path: string;
 }
 
-// 2. Create a Schema corresponding to the document interface.
-const schema = new Schema<Media>({
-  user: { type: Schema.Types.ObjectId, ref: "User" },
-  filename: { type: String, required: true },
-  assetId: { type: String, unique: true, required: true },
-  mediaType: { type: Number, required: false},
-  mediaSubtype: {type: Number, required: false},
-  creationDate: { type: Date, required: true },
-  modificationDate: { type: Date, required: true },
-  duration: { type: Number, required: false},
-  isFavorite: { type: Boolean, required: false, default: false },
-  isHidden: { type: Boolean, required: false, default: false },
-  isLivePhoto: { type: Boolean, required: false, default: false },
-  path: { type: String, required: true },
-  thumbnail_path: { type: String, required: false },
-  livePhoto_path: { type: String, required: false },
-});
+export class MediaDto {
+  readonly user: User;
+  readonly assetId: string;
+  readonly filename: string;
+  readonly mediaType: number;
+  readonly mediaSubType: number;
+  readonly creationDate: Date;
+  readonly modificationDate: Date;
+  readonly duration: number;
+  readonly isFavorite: boolean;
+  readonly isHidden: boolean;
+  readonly isLivePhoto: boolean;
+  readonly path: string;
+  readonly thumbnail_path: string;
+  readonly livePhoto_path: string;
+}
 
-// 3. Create a Model.
-export const MediaModel = model<Media>("media", schema);
+export const MediaSchema = SchemaFactory.createForClass(Media);
