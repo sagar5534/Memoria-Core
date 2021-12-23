@@ -29,9 +29,9 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findById(@Param('id') id: string) {
     try {
-      return this.userRepository.findOne(id);
+      return this.userRepository.findById(id);
     } catch (error) {
       return;
     }

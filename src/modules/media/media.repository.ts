@@ -14,14 +14,12 @@ export class MediaRepository {
     return await this.MediaModel.find().exec();
   }
 
-  async findOne(id: string): Promise<Media> {
+  async findOne(id: string): Promise<MediaDocument> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
 
-    const res = await this.MediaModel.findById(id).exec();
-    if (res) return res;
-    return Promise.reject('Not found');
+    return await this.MediaModel.findById(id).exec();
   }
 
   async findAllAssetIds(user: string): Promise<any> {
@@ -44,14 +42,12 @@ export class MediaRepository {
     }).save();
   }
 
-  async update(id: string, newMedia: Media): Promise<Media> {
+  async update(id: string, newMedia: Media): Promise<MediaDocument> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
 
-    const res = await this.MediaModel.findByIdAndUpdate(id, newMedia).exec();
-    if (res) return res;
-    return Promise.reject('Cannot Update');
+    return await this.MediaModel.findByIdAndUpdate(id, newMedia).exec();
   }
 
   async delete(id: string): Promise<Media> {
@@ -59,8 +55,6 @@ export class MediaRepository {
       return Promise.reject('Error');
     }
 
-    const res = await this.MediaModel.findByIdAndDelete(id).exec();
-    if (res) return res;
-    return Promise.reject('Cannot Delete');
+    return await this.MediaModel.findByIdAndDelete(id).exec();
   }
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MediaModule } from './modules/media/media.module';
 import { UserModule } from './modules/user/user.module';
+import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { MulterModule } from '@nestjs/platform-express';
 import * as dotenv from 'dotenv';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -23,6 +24,7 @@ const DB_PATH = process.env.DB_PATH;
       serveRoot: '/data',
     }),
     MediaModule,
+    AuthenticationModule,
     UserModule,
   ],
   controllers: [],

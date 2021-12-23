@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../../models/user.model';
 import { Types } from 'mongoose';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UserRepository {
@@ -12,19 +13,27 @@ export class UserRepository {
     return await this.UserModel.find().exec();
   }
 
-  async findOne(id: string): Promise<User> {
+  async findById(id: string): Promise<UserDocument> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
 
-    const res = await this.UserModel.findById(id).exec();
-    if (res) return res;
-    return Promise.reject('Not found');
+    return await this.UserModel.findById(id).exec();
   }
 
-  async create(newUser: User): Promise<User> {
+  async findByUsername(username: string): Promise<UserDocument> {
+    return await this.UserModel.findOne({
+      username: username.toLowerCase(),
+    }).exec();
+  }
+
+  async create(newUser: User): Promise<UserDocument> {
+    const temp = new User();
+    temp.username = newUser.username;
+    temp.password = await hash(newUser.password, 10);
+
     return await new this.UserModel({
-      ...newUser,
+      ...temp,
     }).save();
   }
 
@@ -33,9 +42,7 @@ export class UserRepository {
       return Promise.reject('Error');
     }
 
-    const res = await this.UserModel.findByIdAndUpdate(id, newUser).exec();
-    if (res) return res;
-    return Promise.reject('Cannot Update');
+    return await this.UserModel.findByIdAndUpdate(id, newUser).exec();
   }
 
   async delete(id: string): Promise<User> {
@@ -43,8 +50,6 @@ export class UserRepository {
       return Promise.reject('Error');
     }
 
-    const res = await this.UserModel.findByIdAndDelete(id).exec();
-    if (res) return res;
-    return Promise.reject('Cannot Delete');
+    return await this.UserModel.findByIdAndDelete(id).exec();
   }
 }
