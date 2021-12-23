@@ -1,10 +1,10 @@
 {
-  "name": "memoria-core",
-  "version": "0.0.1",
+  "name": "Memoria-core",
+  "version": "1.0.0",
   "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "author": "Sagar Patel",
+  "private": false,
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
