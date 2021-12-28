@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   UseInterceptors,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { MediaDto } from '../../models/media.model';
 import { MediaRepository } from './media.repository';
@@ -29,48 +30,62 @@ export class MediaController {
   ) {}
 
   @Post()
-  create(@Body() createMediaDto: MediaDto) {
+  create(@Body() createMediaDto: MediaDto, @Req() request) {
     try {
-      return this.mediaRepository.create(createMediaDto);
+      const userId = request.user.id;
+
+      const temp = {
+        ...createMediaDto,
+        user: userId,
+      };
+
+      return this.mediaRepository.create(temp);
     } catch (error) {
       return error;
     }
   }
 
-  // TODO: make it only for validated users media
   @Get()
-  findAll() {
-    return this.mediaRepository.findAll();
+  findAll(@Req() request) {
+    const userId = request.user.id;
+    return this.mediaRepository.findAll(userId);
   }
 
-  //TODO: make it send user to the repo
-  @Post('assets')
-  findAssetIds() {
-    return this.mediaRepository.findAllAssetIds('61bfc7c7c58be9e15101870b');
+  @Get('assets')
+  findAssetIds(@Req() request) {
+    const userId = request.user.id;
+    return this.mediaRepository.findAllAssetIds(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @Req() request) {
     try {
-      return this.mediaRepository.findOne(id);
+      const userId = request.user.id;
+      return this.mediaRepository.findOne(id, userId);
     } catch (error) {
       return;
     }
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateMediaDto: MediaDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMediaDto: MediaDto,
+    @Req() request,
+  ) {
     try {
-      return this.mediaRepository.update(id, updateMediaDto);
+      const userId = request.user.id;
+      return this.mediaRepository.update(id, updateMediaDto, userId);
     } catch (error) {
       return;
     }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string, @Req() request) {
     try {
-      return this.mediaRepository.delete(id);
+      const userId = request.user.id;
+      return this.mediaRepository.delete(id, userId);
     } catch (error) {
       return;
     }
@@ -89,10 +104,12 @@ export class MediaController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() createMediaDto: any,
     @Res() res: Response,
+    @Req() request,
   ) {
     if (!files) return;
     if (!createMediaDto.assetId) return;
 
+    const userId = request.user.id;
     const media = this.mediaService.convertPayloadToMedia(
       createMediaDto,
       files,
@@ -112,7 +129,7 @@ export class MediaController {
         .then((savePath) => {
           // TODO: Find a better solution to update a record
           media.thumbnail_path = savePath as string;
-          this.mediaRepository.update(saved.id, media);
+          this.mediaRepository.update(saved.id, media, userId);
         })
         .then(() => console.log('Thumbnail Updated', '--', media.filename))
         .catch((error) => {

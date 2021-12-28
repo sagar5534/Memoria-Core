@@ -5,7 +5,6 @@ import {
   Post,
   Req,
   UnauthorizedException,
-  UseGuards,
 } from '@nestjs/common';
 import {
   LoginRequest,
@@ -15,7 +14,7 @@ import {
 import { UserService } from '../user/user.service';
 import { RefreshTokenService } from '../authentication/refresh_token.service';
 import { User, UserDocument } from '../../models/user.model';
-import { JWTGuard } from './jwt.guard';
+import { Public } from './public.decorator';
 
 export interface AuthenticationPayload {
   user: User;
@@ -33,6 +32,7 @@ export class AuthenticationController {
     private refreshTokenService: RefreshTokenService,
   ) {}
 
+  @Public()
   @Post('/register')
   public async register(@Body() body: RegisterRequest) {
     const user = await this.userService.createUserFromRequest(body);
@@ -50,6 +50,7 @@ export class AuthenticationController {
     };
   }
 
+  @Public()
   @Post('/login')
   public async login(@Body() body: LoginRequest) {
     const { username, password } = body;
@@ -77,6 +78,7 @@ export class AuthenticationController {
     };
   }
 
+  @Public()
   @Post('/refresh')
   public async refresh(@Body() body: RefreshRequest) {
     const { user, token } =
@@ -93,7 +95,6 @@ export class AuthenticationController {
   }
 
   @Get('/me')
-  @UseGuards(JWTGuard)
   public async getUser(@Req() request) {
     const userId = request.user.id;
 
