@@ -44,28 +44,17 @@ export class MediaRepository {
     }).save();
   }
 
-  async update(
-    id: string,
-    newMedia: Media,
-    user: string,
-  ): Promise<MediaDocument> {
+  async update(id: string, newMedia: Media): Promise<MediaDocument> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
-
-    if (newMedia.user && (newMedia.user as any) != user) return;
-
-    return await this.MediaModel.findOneAndUpdate(
-      { user, id },
-      newMedia,
-    ).exec();
+    return await this.MediaModel.findByIdAndUpdate(id, newMedia).exec();
   }
 
-  async delete(id: string, user: string): Promise<Media> {
+  async delete(id: string): Promise<Media> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
-
-    return await this.MediaModel.findOneAndDelete({ user, id }).exec();
+    return await this.MediaModel.findByIdAndDelete(id).exec();
   }
 }

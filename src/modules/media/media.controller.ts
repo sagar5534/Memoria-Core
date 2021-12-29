@@ -75,17 +75,16 @@ export class MediaController {
   ) {
     try {
       const userId = request.user.id;
-      return this.mediaRepository.update(id, updateMediaDto, userId);
+      return this.mediaRepository.update(id, updateMediaDto);
     } catch (error) {
       return;
     }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() request) {
+  remove(@Param('id') id: string) {
     try {
-      const userId = request.user.id;
-      return this.mediaRepository.delete(id, userId);
+      return this.mediaRepository.delete(id);
     } catch (error) {
       return;
     }
@@ -129,7 +128,7 @@ export class MediaController {
         .then((savePath) => {
           // TODO: Find a better solution to update a record
           media.thumbnail_path = savePath as string;
-          this.mediaRepository.update(saved.id, media, userId);
+          this.mediaRepository.update(saved.id, media);
         })
         .then(() => console.log('Thumbnail Updated', '--', media.filename))
         .catch((error) => {
