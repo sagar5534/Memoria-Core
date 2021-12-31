@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as imageThumbnail from 'image-thumbnail';
 import * as fs from 'fs';
-import * as path from 'path';
 import { Media } from 'src/models/media.model';
+import { join } from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require('config');
 
 @Injectable()
 export class ThumbnailService {
@@ -16,11 +18,11 @@ export class ThumbnailService {
       responseType: 'buffer',
       jpegOptions: { force: true, quality: 100 },
     };
-    this.saveLocation = 'public/thumbs';
+    this.saveLocation = join(config.get('storage.path'), 'Memoria', '.thumbs');
   }
 
   async makeThumbnail(inputPath: string, mediaDocument: Media) {
-    const savePath = path.join(
+    const savePath = join(
       this.saveLocation,
       mediaDocument.filename + '_thumb.jpg',
     );

@@ -1,13 +1,15 @@
 import { Callback } from 'mongoose';
+import { join } from 'path';
 import * as fs from 'fs';
-import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require('config');
 
 export const editDestination = (
   req: Request,
   file: Express.Multer.File,
   callback: Callback,
 ) => {
-  callback(null, 'public/uploads/');
+  callback(null, join(config.get('storage.path'), 'Memoria'));
 };
 
 export const editFileName = (
@@ -17,11 +19,16 @@ export const editFileName = (
 ) => {
   const fileExt = file.originalname.split('.').pop();
   const filename = (req.body as any).filename ?? 'File';
-
   let counter = 0;
   let dupl = '';
   while (
-    fs.existsSync(path.join('public/uploads', filename + dupl + '.' + fileExt))
+    fs.existsSync(
+      join(
+        config.get('storage.path'),
+        'Memoria',
+        filename + dupl + '.' + fileExt,
+      ),
+    )
   ) {
     counter += 1;
     dupl = '(' + counter + ')';

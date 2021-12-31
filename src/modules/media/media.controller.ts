@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   UseInterceptors,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { MediaDto } from '../../models/media.model';
 import { MediaRepository } from './media.repository';
@@ -19,6 +20,9 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editDestination, editFileName } from './upload.utils';
 import { Response } from 'express';
+import { join } from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require('config');
 
 @Controller('media')
 export class MediaController {
@@ -29,38 +33,67 @@ export class MediaController {
   ) {}
 
   @Post()
-  create(@Body() createMediaDto: MediaDto) {
+  create(@Body() createMediaDto: MediaDto, @Req() request) {
     try {
-      return this.mediaRepository.create(createMediaDto);
+      const userId = request.user.id;
+
+      const temp = {
+        ...createMediaDto,
+        user: userId,
+      };
+
+      return this.mediaRepository.create(temp);
     } catch (error) {
       return error;
     }
   }
 
-  // TODO: make it only for validated users media
   @Get()
-  findAll() {
-    return this.mediaRepository.findAll();
+  findAll(@Req() request) {
+    const userId = request.user.id;
+    return this.mediaRepository.findAll(userId);
   }
 
-  //TODO: make it send user to the repo
-  @Post('assets')
-  findAssetIds() {
-    return this.mediaRepository.findAllAssetIds('61bfc7c7c58be9e15101870b');
+  @Get('rsrc/:file')
+  findResource(@Param('file') file: string, @Res() res) {
+    //TODO: Check if user has permission to see
+    //TODO: This only allows 1 level - Shouldnt be necess. just yet
+    return res.sendFile(join(config.get('storage.path'), 'Memoria', file));
+  }
+
+  @Get('thumb/:file')
+  findThumb(@Param('file') file: string, @Res() res) {
+    //TODO: Check if user has permission to see
+    //TODO: This only allows 1 level - Shouldnt be necess. just yet
+    return res.sendFile(
+      join(config.get('storage.path'), 'Memoria', '.thumbs', file),
+    );
+  }
+
+  @Get('assets')
+  findAssetIds(@Req() request) {
+    const userId = request.user.id;
+    return this.mediaRepository.findAllAssetIds(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @Req() request) {
     try {
-      return this.mediaRepository.findOne(id);
+      const userId = request.user.id;
+      return this.mediaRepository.findOne(id, userId);
     } catch (error) {
       return;
     }
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateMediaDto: MediaDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMediaDto: MediaDto,
+    @Req() request,
+  ) {
     try {
+      const userId = request.user.id;
       return this.mediaRepository.update(id, updateMediaDto);
     } catch (error) {
       return;
@@ -89,13 +122,16 @@ export class MediaController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() createMediaDto: any,
     @Res() res: Response,
+    @Req() request,
   ) {
     if (!files) return;
     if (!createMediaDto.assetId) return;
 
+    const userId = request.user.id;
     const media = this.mediaService.convertPayloadToMedia(
       createMediaDto,
       files,
+      userId,
     );
 
     try {
@@ -110,11 +146,14 @@ export class MediaController {
       this.thumbnailService
         .makeThumbnail((files as any)[0].path, media)
         .then((savePath) => {
-          // TODO: Find a better solution to update a record
-          media.thumbnail_path = savePath as string;
-          this.mediaRepository.update(saved.id, media);
+          if (savePath != null) {
+            media.thumbnail_path = savePath as string;
+            this.mediaRepository.update(saved.id, media);
+            console.log('Thumbnail Updated', '--', media.filename);
+          } else {
+            console.log('Thumbnail Skipped', '--', media.filename);
+          }
         })
-        .then(() => console.log('Thumbnail Updated', '--', media.filename))
         .catch((error) => {
           console.log('Thumbnail Error: ', '--', error);
         });

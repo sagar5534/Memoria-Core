@@ -10,18 +10,18 @@ export class MediaRepository {
     @InjectModel(Media.name) private MediaModel: Model<MediaDocument>,
   ) {}
 
-  async findAll(): Promise<Media[]> {
-    return await this.MediaModel.find().exec();
+  async findAll(user: string): Promise<Media[]> {
+    return await this.MediaModel.find({ user }).exec();
   }
 
-  async findOne(id: string): Promise<Media> {
+  async findOne(id: string, user: string): Promise<MediaDocument> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
 
-    const res = await this.MediaModel.findById(id).exec();
-    if (res) return res;
-    return Promise.reject('Not found');
+    const x = await this.MediaModel.findById(id).exec();
+
+    return (x.user as any) === user ? x : null;
   }
 
   async findAllAssetIds(user: string): Promise<any> {
@@ -44,23 +44,17 @@ export class MediaRepository {
     }).save();
   }
 
-  async update(id: string, newMedia: Media): Promise<Media> {
+  async update(id: string, newMedia: Media): Promise<MediaDocument> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
-
-    const res = await this.MediaModel.findByIdAndUpdate(id, newMedia).exec();
-    if (res) return res;
-    return Promise.reject('Cannot Update');
+    return await this.MediaModel.findByIdAndUpdate(id, newMedia).exec();
   }
 
   async delete(id: string): Promise<Media> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
-
-    const res = await this.MediaModel.findByIdAndDelete(id).exec();
-    if (res) return res;
-    return Promise.reject('Cannot Delete');
+    return await this.MediaModel.findByIdAndDelete(id).exec();
   }
 }
