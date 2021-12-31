@@ -20,6 +20,9 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editDestination, editFileName } from './upload.utils';
 import { Response } from 'express';
+import { join } from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require('config');
 
 @Controller('media')
 export class MediaController {
@@ -49,6 +52,22 @@ export class MediaController {
   findAll(@Req() request) {
     const userId = request.user.id;
     return this.mediaRepository.findAll(userId);
+  }
+
+  @Get('rsrc/:file')
+  findResource(@Param('file') file: string, @Res() res) {
+    //TODO: Check if user has permission to see
+    //TODO: This only allows 1 level - Shouldnt be necess. just yet
+    return res.sendFile(join(config.get('storage.path'), 'Memoria', file));
+  }
+
+  @Get('thumb/:file')
+  findThumb(@Param('file') file: string, @Res() res) {
+    //TODO: Check if user has permission to see
+    //TODO: This only allows 1 level - Shouldnt be necess. just yet
+    return res.sendFile(
+      join(config.get('storage.path'), 'Memoria', '.thumbs', file),
+    );
   }
 
   @Get('assets')
@@ -112,6 +131,7 @@ export class MediaController {
     const media = this.mediaService.convertPayloadToMedia(
       createMediaDto,
       files,
+      userId,
     );
 
     try {
@@ -126,11 +146,14 @@ export class MediaController {
       this.thumbnailService
         .makeThumbnail((files as any)[0].path, media)
         .then((savePath) => {
-          // TODO: Find a better solution to update a record
-          media.thumbnail_path = savePath as string;
-          this.mediaRepository.update(saved.id, media);
+          if (savePath != null) {
+            media.thumbnail_path = savePath as string;
+            this.mediaRepository.update(saved.id, media);
+            console.log('Thumbnail Updated', '--', media.filename);
+          } else {
+            console.log('Thumbnail Skipped', '--', media.filename);
+          }
         })
-        .then(() => console.log('Thumbnail Updated', '--', media.filename))
         .catch((error) => {
           console.log('Thumbnail Error: ', '--', error);
         });

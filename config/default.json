@@ -1,0 +1,11 @@
+{
+  "web": {
+    "port": 12480
+  },
+  "mongo": {
+    "host": "mongodb://localhost:27017/memoria"
+  },
+  "storage": {
+    "path": "C:/Users/sagar/Desktop/Testing"
+  }
+}

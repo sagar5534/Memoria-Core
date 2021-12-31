@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
 import { Media } from 'src/models/media.model';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const moment = require('moment');
@@ -10,6 +9,7 @@ export class MediaService {
   convertPayloadToMedia(
     createMediaDto: any,
     files: Array<Express.Multer.File>,
+    user: string,
   ): Media {
     const mediaType = parseInt(createMediaDto.mediaType, 10);
     const mediaSubType = parseInt(createMediaDto.mediaSubType, 10);
@@ -24,7 +24,7 @@ export class MediaService {
     }
 
     const temp: Media = {
-      user: new Types.ObjectId(createMediaDto.user) as any,
+      user: user as any,
       assetId: createMediaDto.assetId,
       filename: createMediaDto.filename,
       mediaType,

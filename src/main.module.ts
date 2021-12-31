@@ -4,25 +4,22 @@ import { MediaModule } from './modules/media/media.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { MulterModule } from '@nestjs/platform-express';
-import * as dotenv from 'dotenv';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { APP_GUARD } from '@nestjs/core';
 import { JWTGuard } from './modules/authentication/jwt.guard';
-
-dotenv.config();
-const DB_PATH = process.env.DB_PATH;
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require('config');
 @Module({
   imports: [
-    MongooseModule.forRoot(DB_PATH),
+    MongooseModule.forRoot(config.get('mongo.host')),
     MulterModule.registerAsync({
       useFactory: () => ({
-        dest: join(__dirname, 'public', 'uploads'),
+        dest: join(config.get('storage.path'), 'Memoria'),
       }),
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'public'),
+      rootPath: join(config.get('storage.path'), 'Memoria'),
       serveRoot: '/data',
     }),
     MediaModule,

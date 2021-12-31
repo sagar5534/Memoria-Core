@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Head,
   Post,
   Req,
   UnauthorizedException,
@@ -31,6 +32,14 @@ export class AuthenticationController {
     private userService: UserService,
     private refreshTokenService: RefreshTokenService,
   ) {}
+
+  @Public()
+  @Get('/health')
+  public async health() {
+    return {
+      status: 'healthy',
+    };
+  }
 
   @Public()
   @Post('/register')
