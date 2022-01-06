@@ -148,6 +148,10 @@ export class MediaController {
         .then((savePath) => {
           if (savePath != null) {
             media.thumbnail_path = savePath as string;
+            media.thumbnail_path = media.thumbnail_path.replace(
+              join(config.get('storage.path'), 'Memoria'),
+              '',
+            );
             this.mediaRepository.update(saved.id, media);
             console.log('Thumbnail Updated', '--', media.filename);
           } else {

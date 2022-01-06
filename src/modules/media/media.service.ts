@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from '@nestjs/common';
 import { Media } from 'src/models/media.model';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+import { join } from 'path';
 const moment = require('moment');
+const config = require('config');
 import * as fs from 'fs';
 
 @Injectable()
@@ -17,8 +19,12 @@ export class MediaService {
     const isFavorite = this.translateStrToBool(createMediaDto.isFavorite);
     const isHidden = this.translateStrToBool(createMediaDto.isHidden);
     const isLivePhoto = this.translateStrToBool(createMediaDto.isLivePhoto);
-    let livePhotoPath = '';
+    const path = (files as any)[0].path.replace(
+      join(config.get('storage.path'), 'Memoria'),
+      '',
+    );
 
+    let livePhotoPath = '';
     if (isLivePhoto && files.length > 1) {
       livePhotoPath = (files as any)[1].path;
     }
@@ -37,7 +43,7 @@ export class MediaService {
       isFavorite,
       isHidden,
       isLivePhoto,
-      path: (files as any)[0].path,
+      path: path,
       thumbnail_path: '',
       livePhoto_path: livePhotoPath,
     };
