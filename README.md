@@ -45,7 +45,7 @@ Securely back-up your photos and videos to your own servers and enjoy them from 
 
 ## Join the team 👪
 
-There are many ways to contribute, of which development is only one! Find out [how to get involved](https://discord.gg/zTN6hEPH9u), including designers, testers, helping others and much more! 😍
+There are many ways to contribute, of which development is only one! Find out [how to get involved](https://discord.gg/zTN6hEPH9u), including designers, testers, helping others and much more!
 
 ## Contact us
 
@@ -57,4 +57,4 @@ you can join us at the links below: http
 
 ## :scroll: License
 
-Nest is [GPL-3.0](LICENSE) Licensed.
+Memoria is [GPL-3.0](LICENSE) Licensed.
