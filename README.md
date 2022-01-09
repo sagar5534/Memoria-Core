@@ -1,55 +1,60 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+  <img src="./assets/Memoria_Logo_Github.png" width="500">
 </p>
 
-  <p align="center"><a href="https://github.com/sagar5534" target="_blank">Memoria</a> a photo library in your own cloud</p>
-    <p align="center"></p>
-
 ## Description
+Securely back-up your photos and videos to your own servers and enjoy them from anywhere.
 
-We are under development :)
+## Why try it out?
 
-## Installation
+* :left_right_arrow: **Automatic Sync:** You can store your photos and videos on a server of your choosing.
 
-```bash
-$ npm i
-```
+* 🙌 **All your photos, on all your devices:** Access every photo and video in your library — from any device, anytime you want.
 
-## Running the app
+* 🔒 **Designed to keep your photos private:** with our encryption mechanisms & JWT Authorization.
 
-```bash
-# development
-$ npm run start
+## Upcoming Features
 
-# watch mode
-$ npm run start:dev
+* 🔒 **Two-factor Authentication:** We believe in privacy and want to take every step to support it
 
-# production mode
-$ npm run start:prod
-```
+* ✨ **Reach more devices:** Upcoming support for Android, Web Apps & Streaming Devices.
 
-## Test
+* 📸 **No Limitations:** Upcoming Support for more media types — Live Photos, Portaits & Slow Motion
 
-```bash
-# unit tests
-$ npm run test
+## Quick Setup
 
-# e2e tests
-$ npm run test:e2e
+1. Install Docker and Docker-Compose
 
-# test coverage
-$ npm run test:cov
-```
+  - [Docker Install documentation](https://docs.docker.com/install/)
+  
+  - [Docker-Compose Install documentation](https://docs.docker.com/compose/install/)
 
-## Support
+2. Edit the docker-compose.yml if necessary
 
-Happy to reciece help from other developers. Got an idea/feature then request it or flag issues. WIll be creating a discord for us soon!
+3. Bring up your stack by running
 
-## Stay in touch
+  ```bash
+  docker-compose up -d
+  ```
 
-- Author - [Sagar Patel](https://kamilmysliwiec.com)
-- Website - [https://sagarp.ca](https://sagarp.ca/)
+4. Access the server from either Apps
 
-## License
+* 📱 [IOS App](https://docs.docker.com/compose/install/)
+
+* 💻 [Web App](https://docs.docker.com/compose/install/)
+
+## Join the team 👪
+
+There are many ways to contribute, of which development is only one! Find out [how to get involved](https://discord.gg/zTN6hEPH9u), including designers, testers, helping others and much more! 😍
+
+## Contact us
+
+If you want to contact us, e.g. before starting a more complex feature, for questions
+you can join us at the links below: http
+
+* [💬 Join the Discord](https://discord.gg/zTN6hEPH9u)
+
+
+## :scroll: License
 
 Nest is [GPL-3.0](LICENSE) Licensed.
