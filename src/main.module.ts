@@ -15,11 +15,11 @@ const config = require('config');
     MongooseModule.forRoot(config.get('mongo.host')),
     MulterModule.registerAsync({
       useFactory: () => ({
-        dest: join(config.get('storage.path'), 'Memoria'),
+        dest: join(config.get('storage.path'), 'media'),
       }),
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(config.get('storage.path'), 'Memoria'),
+      rootPath: join(config.get('storage.path'), 'media'),
       serveRoot: '/data',
     }),
     MediaModule,

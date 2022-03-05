@@ -10,7 +10,9 @@ async function bootstrap() {
 
   checkStoragePaths();
 
-  const app = await NestFactory.create(MainModule);
+  const app = await NestFactory.create(MainModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
   await app.listen(PORT, () => {
     console.log(`Running Memoria on ${PORT} ⚡`);
   });
@@ -18,8 +20,8 @@ async function bootstrap() {
 
 async function checkStoragePaths() {
   const storagePaths = [
-    join(config.get('storage.path'), 'Memoria'),
-    join(config.get('storage.path'), 'Memoria', '.thumbs'),
+    join(config.get('storage.path'), 'media'),
+    join(config.get('storage.path'), 'media', '.thumbs'),
   ];
 
   for (const path of storagePaths) {

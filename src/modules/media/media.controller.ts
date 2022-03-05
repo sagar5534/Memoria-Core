@@ -58,7 +58,7 @@ export class MediaController {
   findResource(@Param('file') file: string, @Res() res) {
     //TODO: Check if user has permission to see
     //TODO: This only allows 1 level - Shouldnt be necess. just yet
-    return res.sendFile(join(config.get('storage.path'), 'Memoria', file));
+    return res.sendFile(join(config.get('storage.path'), 'media', file));
   }
 
   @Get('thumb/:file')
@@ -66,7 +66,7 @@ export class MediaController {
     //TODO: Check if user has permission to see
     //TODO: This only allows 1 level - Shouldnt be necess. just yet
     return res.sendFile(
-      join(config.get('storage.path'), 'Memoria', '.thumbs', file),
+      join(config.get('storage.path'), 'media', '.thumbs', file),
     );
   }
 
@@ -149,7 +149,7 @@ export class MediaController {
           if (savePath != null) {
             media.thumbnail_path = savePath as string;
             media.thumbnail_path = media.thumbnail_path.replace(
-              join(config.get('storage.path'), 'Memoria'),
+              join(config.get('storage.path'), 'media'),
               '',
             );
             this.mediaRepository.update(saved.id, media);

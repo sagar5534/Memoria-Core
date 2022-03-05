@@ -6,9 +6,9 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - C:/data/db:/data/db  #Change if needed
-    expose:
-      - 27017
+      - ~/memoria/mongo/db:/data/db  #Change if needed
+    ports:
+      - "27017:27017"
     restart: always
 
   memoria:
@@ -18,10 +18,11 @@ services:
     depends_on: 
       - mongo
     volumes:
-      - '.:/app' #Change if needed
-      - '/app/node_modules'  #Change if needed
+      - '.:/app'
+      - '/app/node_modules'
+      - '~/memoria:/var/lib/memoria' #Change if needed
     expose:
-      - "3000"
+      - "12480"
     restart: always
 
   nginx:
@@ -31,5 +32,5 @@ services:
     depends_on:
       - memoria
     ports:
-      - "4000:4000"
+      - "12480:12480"
     restart: always

@@ -3,9 +3,9 @@
     "port": 12480
   },
   "mongo": {
-    "host": "mongodb://localhost:27017/memoria"
+    "host": "mongodb://mongo:27017/memoria"
   },
   "storage": {
-    "path": "C:/Users/sagar/Desktop/Testing"
+    "path": "/var/lib/memoria"
   }
 }

@@ -9,7 +9,7 @@ export const editDestination = (
   file: Express.Multer.File,
   callback: Callback,
 ) => {
-  callback(null, join(config.get('storage.path'), 'Memoria'));
+  callback(null, join(config.get('storage.path'), 'media'));
 };
 
 export const editFileName = (
@@ -25,7 +25,7 @@ export const editFileName = (
     fs.existsSync(
       join(
         config.get('storage.path'),
-        'Memoria',
+        'media',
         filename + dupl + '.' + fileExt,
       ),
     )

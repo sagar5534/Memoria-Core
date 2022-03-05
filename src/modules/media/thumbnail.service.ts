@@ -30,7 +30,7 @@ export class ThumbnailService {
       responseType: 'buffer',
       jpegOptions: { force: true, quality: 100 },
     };
-    this.saveLocation = join(config.get('storage.path'), 'Memoria', '.thumbs');
+    this.saveLocation = join(config.get('storage.path'), 'media', '.thumbs');
   }
 
   async makeThumbnail(inputPath: string, mediaDocument: Media) {

@@ -20,7 +20,7 @@ export class MediaService {
     const isHidden = this.translateStrToBool(createMediaDto.isHidden);
     const isLivePhoto = this.translateStrToBool(createMediaDto.isLivePhoto);
     const path = (files as any)[0].path.replace(
-      join(config.get('storage.path'), 'Memoria'),
+      join(config.get('storage.path'), 'media'),
       '',
     );
 
