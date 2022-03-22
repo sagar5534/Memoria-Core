@@ -135,23 +135,23 @@ export class MediaController {
     );
 
     try {
-      for (const file of files as any) {
-        console.log('File Uploaded', '--', media.filename, '--', file.path);
-      }
-
+      //Save to mongodb
       const saved = await this.mediaRepository.create(media);
       console.log('Record Created', '--', media.filename);
+
+      //Upload completed
       res.status(HttpStatus.OK).send();
 
+      //Make Thumbnail
       this.thumbnailService
-        .makeThumbnail((files as any)[0].path, media)
+        .makeThumbnail(files, media)
         .then((savePath) => {
           if (savePath != null) {
-            media.thumbnail_path = savePath as string;
-            media.thumbnail_path = media.thumbnail_path.replace(
+            savePath = (savePath as string).replace(
               join(config.get('storage.path'), 'media'),
               '',
             );
+            media.thumbnail_path = savePath;
             this.mediaRepository.update(saved.id, media);
             console.log('Thumbnail Updated', '--', media.filename);
           } else {

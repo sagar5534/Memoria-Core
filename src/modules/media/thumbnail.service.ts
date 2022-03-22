@@ -7,6 +7,7 @@ import { join } from 'path';
 import ThumbnailGenerator from 'video-thumbnail-generator';
 const config = require('config');
 const ffmpeg = require('fluent-ffmpeg');
+const heicConvert = require('heic-convert');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
 
@@ -33,34 +34,56 @@ export class ThumbnailService {
     this.saveLocation = join(config.get('storage.path'), 'media', '.thumbs');
   }
 
-  async makeThumbnail(inputPath: string, mediaDocument: Media) {
+  async makeThumbnail(files: Array<Express.Multer.File>, mediaDocument: Media) {
+    try {
+      console.log(mediaDocument);
+
+      if (mediaDocument.mediaType == mediaType.video) {
+        return this.videoThumbnail(files[0], mediaDocument);
+      } else {
+        return this.imgThumbnail(files[0], mediaDocument);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async videoThumbnail(file: Express.Multer.File, mediaDocument: Media) {
+    const tg = new ThumbnailGenerator({
+      sourcePath: file.path,
+      thumbnailPath: this.saveLocation,
+      tmpDir: this.saveLocation,
+      percent: '25%',
+    });
+
+    return await tg.generateGif({
+      fps: 0.75,
+      scale: 180,
+      speedMultiple: 4,
+      deletePalette: true,
+    });
+  }
+
+  async imgThumbnail(file: Express.Multer.File, mediaDocument: Media) {
     const savePath = join(
       this.saveLocation,
       mediaDocument.filename + '_thumb.jpg',
     );
 
-    try {
-      if (mediaDocument.mediaType === mediaType.video) {
-        const tg = new ThumbnailGenerator({
-          sourcePath: inputPath,
-          thumbnailPath: this.saveLocation,
-          tmpDir: this.saveLocation,
-          percent: '25%',
-        });
+    // Dealing with an heic
+    if (mediaDocument.path.toLowerCase().includes('.heic')) {
+      file = await heicConvert({
+        buffer: fs.readFileSync(file.path),
+        format: 'JPEG',
+        quality: 1,
+      });
 
-        return await tg.generateGif({
-          fps: 0.75,
-          scale: 180,
-          speedMultiple: 4,
-          deletePalette: true,
-        });
-      } else {
-        const thumbnail = await imageThumbnail(inputPath, this.imgOptions);
-        return this.saveThumbnail(thumbnail, savePath);
-      }
-    } catch (err) {
-      console.error(err);
+      const thumbnail = await imageThumbnail(file, this.imgOptions);
+      return this.saveThumbnail(thumbnail, savePath);
     }
+
+    const thumbnail = await imageThumbnail(file.path, this.imgOptions);
+    return this.saveThumbnail(thumbnail, savePath);
   }
 
   saveThumbnail(bufferData: Buffer, savePath: string) {
