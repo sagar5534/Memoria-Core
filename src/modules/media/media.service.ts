@@ -26,7 +26,10 @@ export class MediaService {
 
     let livePhotoPath = '';
     if (isLivePhoto && files.length > 1) {
-      livePhotoPath = (files as any)[1].path;
+      livePhotoPath = (files as any)[1].path.replace(
+        join(config.get('storage.path'), 'media'),
+        '',
+      );
     }
 
     const temp: Media = {
