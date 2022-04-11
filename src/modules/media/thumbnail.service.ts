@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from '@nestjs/common';
 import * as imageThumbnail from 'image-thumbnail';
-import * as fs from 'fs';
+import { readFileSync, writeFile } from 'fs';
 import { Media } from 'src/models/media.model';
 import { join } from 'path';
 import ThumbnailGenerator from 'video-thumbnail-generator';
@@ -73,7 +73,7 @@ export class ThumbnailService {
     // Dealing with an heic
     if (mediaDocument.path.toLowerCase().includes('.heic')) {
       file = await heicConvert({
-        buffer: fs.readFileSync(file.path),
+        buffer: readFileSync(file.path),
         format: 'JPEG',
         quality: 1,
       });
@@ -88,7 +88,7 @@ export class ThumbnailService {
 
   saveThumbnail(bufferData: Buffer, savePath: string) {
     return new Promise((resolve, reject) => {
-      fs.writeFile(savePath, bufferData, (err) => {
+      writeFile(savePath, bufferData, (err) => {
         if (err) {
           reject(err);
         } else {

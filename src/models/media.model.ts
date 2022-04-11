@@ -1,14 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as mongoose from 'mongoose';
-import { User } from './user.model';
 
 export type MediaDocument = Media & Document;
 
 @Schema()
 export class Media {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  user: User;
-
   @Prop({ required: true })
   filename: string;
 
@@ -16,10 +11,10 @@ export class Media {
   assetId: string;
 
   @Prop()
-  mediaType: number;
+  mediaType?: number;
 
   @Prop()
-  mediaSubType: number;
+  mediaSubType?: number;
 
   @Prop({ required: true })
   creationDate: Date;
@@ -28,16 +23,16 @@ export class Media {
   modificationDate: Date;
 
   @Prop()
-  duration: number;
+  duration?: number;
 
   @Prop({ default: false })
-  isFavorite: boolean;
+  isFavorite?: boolean;
 
   @Prop({ default: false })
-  isHidden: boolean;
+  isHidden?: boolean;
 
   @Prop({ default: false })
-  isLivePhoto: boolean;
+  isLivePhoto?: boolean;
 
   @Prop({ required: true })
   path: string;
@@ -50,20 +45,19 @@ export class Media {
 }
 
 export class MediaDto {
-  readonly user: User;
-  readonly assetId: string;
-  readonly filename: string;
-  readonly mediaType: number;
-  readonly mediaSubType: number;
-  readonly creationDate: Date;
-  readonly modificationDate: Date;
-  readonly duration: number;
-  readonly isFavorite: boolean;
-  readonly isHidden: boolean;
-  readonly isLivePhoto: boolean;
-  readonly path: string;
-  readonly thumbnail_path: string;
-  readonly livePhoto_path: string;
+  assetId: string;
+  filename: string;
+  mediaType?: number;
+  mediaSubType?: number;
+  creationDate: Date;
+  modificationDate: Date;
+  duration?: number;
+  isFavorite?: boolean;
+  isHidden?: boolean;
+  isLivePhoto?: boolean;
+  path: string;
+  thumbnail_path: string;
+  livePhoto_path: string;
 }
 
 export const MediaSchema = SchemaFactory.createForClass(Media);

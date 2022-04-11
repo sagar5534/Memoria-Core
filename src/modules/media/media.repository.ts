@@ -10,25 +10,30 @@ export class MediaRepository {
     @InjectModel(Media.name) private MediaModel: Model<MediaDocument>,
   ) {}
 
-  async findAll(user: string): Promise<Media[]> {
-    return await this.MediaModel.find({ user }).exec();
+  async findAll(): Promise<Media[]> {
+    return await this.MediaModel.find().exec();
   }
 
-  async findOne(id: string, user: string): Promise<MediaDocument> {
+  async findOne(id: string): Promise<MediaDocument> {
     if (!Types.ObjectId.isValid(id)) {
       return Promise.reject('Error');
     }
 
     const x = await this.MediaModel.findById(id).exec();
 
-    return (x.user as any) === user ? x : null;
+    return x;
   }
 
-  async findAllAssetIds(user: string): Promise<any> {
-    if (!Types.ObjectId.isValid(user)) {
-      return Promise.reject('Error');
-    }
-    const res = await this.MediaModel.find({ user }, { assetId: 1 }).exec();
+  async findOneByPath(path: string): Promise<MediaDocument> {
+    const x = await this.MediaModel.findOne({
+      path: path,
+    }).exec();
+
+    return x;
+  }
+
+  async findAllAssetIds(): Promise<any> {
+    const res = await this.MediaModel.find({ assetId: 1 }).exec();
     if (res) {
       return res.map((asset) => {
         return asset.assetId;

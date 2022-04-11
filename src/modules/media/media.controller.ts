@@ -10,7 +10,6 @@ import {
   UploadedFiles,
   UseInterceptors,
   HttpStatus,
-  Req,
 } from '@nestjs/common';
 import { MediaDto } from '../../models/media.model';
 import { MediaRepository } from './media.repository';
@@ -33,13 +32,10 @@ export class MediaController {
   ) {}
 
   @Post()
-  create(@Body() createMediaDto: MediaDto, @Req() request) {
+  create(@Body() createMediaDto: MediaDto) {
     try {
-      const userId = request.user.id;
-
       const temp = {
         ...createMediaDto,
-        user: userId,
       };
 
       return this.mediaRepository.create(temp);
@@ -49,51 +45,40 @@ export class MediaController {
   }
 
   @Get()
-  findAll(@Req() request) {
-    const userId = request.user.id;
-    return this.mediaRepository.findAll(userId);
+  findAll() {
+    return this.mediaRepository.findAll();
   }
 
   @Get('rsrc/:file')
   findResource(@Param('file') file: string, @Res() res) {
-    //TODO: Check if user has permission to see
     //TODO: This only allows 1 level - Shouldnt be necess. just yet
     return res.sendFile(join(config.get('storage.path'), 'media', file));
   }
 
   @Get('thumb/:file')
   findThumb(@Param('file') file: string, @Res() res) {
-    //TODO: Check if user has permission to see
-    //TODO: This only allows 1 level - Shouldnt be necess. just yet
     return res.sendFile(
       join(config.get('storage.path'), 'media', '.thumbs', file),
     );
   }
 
   @Get('assets')
-  findAssetIds(@Req() request) {
-    const userId = request.user.id;
-    return this.mediaRepository.findAllAssetIds(userId);
+  findAssetIds() {
+    return this.mediaRepository.findAllAssetIds();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() request) {
+  findOne(@Param('id') id: string) {
     try {
-      const userId = request.user.id;
-      return this.mediaRepository.findOne(id, userId);
+      return this.mediaRepository.findOne(id);
     } catch (error) {
       return;
     }
   }
 
   @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateMediaDto: MediaDto,
-    @Req() request,
-  ) {
+  update(@Param('id') id: string, @Body() updateMediaDto: MediaDto) {
     try {
-      const userId = request.user.id;
       return this.mediaRepository.update(id, updateMediaDto);
     } catch (error) {
       return;
@@ -122,16 +107,13 @@ export class MediaController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() createMediaDto: any,
     @Res() res: Response,
-    @Req() request,
   ) {
     if (!files) return;
     if (!createMediaDto.assetId) return;
 
-    const userId = request.user.id;
     const media = this.mediaService.convertPayloadToMedia(
       createMediaDto,
       files,
-      userId,
     );
 
     try {

@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from '@nestjs/common';
-import { Media } from 'src/models/media.model';
+import { MediaDto } from 'src/models/media.model';
 import { join } from 'path';
+import { unlink } from 'fs';
 const moment = require('moment');
 const config = require('config');
-import * as fs from 'fs';
 
 @Injectable()
 export class MediaService {
   convertPayloadToMedia(
     createMediaDto: any,
     files: Array<Express.Multer.File>,
-    user: string,
-  ): Media {
+  ): MediaDto {
     const mediaType = parseInt(createMediaDto.mediaType, 10);
     const mediaSubType = parseInt(createMediaDto.mediaSubType, 10);
     const duration = parseFloat(createMediaDto.duration);
@@ -32,8 +31,7 @@ export class MediaService {
       );
     }
 
-    const temp: Media = {
-      user: user as any,
+    const temp: MediaDto = {
       assetId: createMediaDto.assetId,
       filename: createMediaDto.filename,
       mediaType,
@@ -67,7 +65,7 @@ export class MediaService {
 
   deleteSavedFiles(files: Array<Express.Multer.File>) {
     for (const file of files as any) {
-      fs.unlink(file.path, (err) => {
+      unlink(file.path, (err) => {
         if (err) return console.log(err);
         console.warn('File Deleted', file.path);
       });

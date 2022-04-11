@@ -1,6 +1,6 @@
 import { Callback } from 'mongoose';
 import { join } from 'path';
-import * as fs from 'fs';
+import { existsSync } from 'fs';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('config');
 
@@ -22,7 +22,7 @@ export const editFileName = (
   let counter = 0;
   let dupl = '';
   while (
-    fs.existsSync(
+    existsSync(
       join(
         config.get('storage.path'),
         'media',

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { MainModule } from './main.module';
 import { join } from 'path';
-import * as fs from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('config');
 
@@ -25,8 +25,8 @@ async function checkStoragePaths() {
   ];
 
   for (const path of storagePaths) {
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path, { recursive: true });
+    if (!existsSync(path)) {
+      mkdirSync(path, { recursive: true });
     }
   }
 }
