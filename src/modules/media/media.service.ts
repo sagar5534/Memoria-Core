@@ -19,14 +19,14 @@ export class MediaService {
     const isHidden = this.translateStrToBool(createMediaDto.isHidden);
     const isLivePhoto = this.translateStrToBool(createMediaDto.isLivePhoto);
     const path = (files as any)[0].path.replace(
-      join(config.get('storage.path'), 'media'),
+      join(config.get('storage.path'), 'media', '\\'),
       '',
     );
 
     let livePhotoPath = '';
     if (isLivePhoto && files.length > 1) {
       livePhotoPath = (files as any)[1].path.replace(
-        join(config.get('storage.path'), 'media'),
+        join(config.get('storage.path'), 'media', '\\'),
         '',
       );
     }
@@ -47,6 +47,7 @@ export class MediaService {
       path: path,
       thumbnail_path: '',
       livePhoto_path: livePhotoPath,
+      source: createMediaDto.filename,
     };
 
     return temp;
@@ -66,8 +67,8 @@ export class MediaService {
   deleteSavedFiles(files: Array<Express.Multer.File>) {
     for (const file of files as any) {
       unlink(file.path, (err) => {
-        if (err) return console.log(err);
-        console.warn('File Deleted', file.path);
+        if (err) return console.error(err);
+        console.log('File Deleted', file.path);
       });
     }
   }

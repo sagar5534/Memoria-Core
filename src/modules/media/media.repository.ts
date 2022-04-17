@@ -10,7 +10,7 @@ export class MediaRepository {
     @InjectModel(Media.name) private MediaModel: Model<MediaDocument>,
   ) {}
 
-  async findAll(): Promise<Media[]> {
+  async findAll(): Promise<MediaDocument[]> {
     return await this.MediaModel.find().exec();
   }
 
@@ -24,16 +24,14 @@ export class MediaRepository {
     return x;
   }
 
-  async findOneByPath(path: string): Promise<MediaDocument> {
-    const x = await this.MediaModel.findOne({
+  async ExistsOneByPath(path: string): Promise<MediaDocument> {
+    return await this.MediaModel.findOne({
       path: path,
     }).exec();
-
-    return x;
   }
 
   async findAllAssetIds(): Promise<any> {
-    const res = await this.MediaModel.find({ assetId: 1 }).exec();
+    const res = await this.MediaModel.find().exec();
     if (res) {
       return res.map((asset) => {
         return asset.assetId;

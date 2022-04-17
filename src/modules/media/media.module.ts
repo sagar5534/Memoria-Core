@@ -12,6 +12,6 @@ import { ThumbnailService } from './thumbnail.service';
   ],
   controllers: [MediaController],
   providers: [MediaRepository, MediaService, ThumbnailService],
-  exports: [MediaRepository],
+  exports: [MediaRepository, ThumbnailService],
 })
 export class MediaModule {}

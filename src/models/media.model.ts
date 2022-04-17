@@ -1,9 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ObjectId } from 'mongoose';
 
 export type MediaDocument = Media & Document;
 
 @Schema()
 export class Media {
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  // _id: User;
+
   @Prop({ required: true })
   filename: string;
 
@@ -11,7 +15,7 @@ export class Media {
   assetId: string;
 
   @Prop()
-  mediaType?: number;
+  mediaType: number;
 
   @Prop()
   mediaSubType?: number;
@@ -42,12 +46,16 @@ export class Media {
 
   @Prop()
   livePhoto_path: string;
+
+  @Prop()
+  source: string;
 }
 
 export class MediaDto {
+  _id?: ObjectId;
   assetId: string;
   filename: string;
-  mediaType?: number;
+  mediaType: number;
   mediaSubType?: number;
   creationDate: Date;
   modificationDate: Date;
@@ -58,6 +66,7 @@ export class MediaDto {
   path: string;
   thumbnail_path: string;
   livePhoto_path: string;
+  source: string;
 }
 
 export const MediaSchema = SchemaFactory.createForClass(Media);

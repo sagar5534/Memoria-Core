@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from '@nestjs/common';
+import { readFile } from 'fs';
+import { outputFile } from 'fs-extra';
+import { Media, MediaDto } from 'src/models/media.model';
+import { join, extname } from 'path';
 import * as imageThumbnail from 'image-thumbnail';
-import { readFileSync, writeFile } from 'fs';
-import { Media } from 'src/models/media.model';
-import { join } from 'path';
 import ThumbnailGenerator from 'video-thumbnail-generator';
+const heicConvert = require('heic-convert');
+const { promisify } = require('util');
 const config = require('config');
 const ffmpeg = require('fluent-ffmpeg');
-const heicConvert = require('heic-convert');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
-
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
 const mediaType = {
-  photo: 1,
-  video: 2,
+  photo: 0,
+  video: 1,
 };
-
 @Injectable()
 export class ThumbnailService {
   private saveLocation: string;
@@ -34,27 +34,27 @@ export class ThumbnailService {
     this.saveLocation = join(config.get('storage.path'), 'media', '.thumbs');
   }
 
-  async makeThumbnail(files: Array<Express.Multer.File>, mediaDocument: Media) {
+  async makeThumbnail(fileAbsPath: string, mediaDocument: MediaDto) {
     try {
-      console.log(mediaDocument);
-
       if (mediaDocument.mediaType == mediaType.video) {
-        return this.videoThumbnail(files[0], mediaDocument);
+        return await this.videoThumbnail(fileAbsPath);
       } else {
-        return this.imgThumbnail(files[0], mediaDocument);
+        return await this.imgThumbnail(fileAbsPath, mediaDocument);
       }
     } catch (err) {
       console.error(err);
     }
   }
 
-  async videoThumbnail(file: Express.Multer.File, mediaDocument: Media) {
+  async videoThumbnail(fileAbsPath: string) {
     const tg = new ThumbnailGenerator({
-      sourcePath: file.path,
+      sourcePath: fileAbsPath,
       thumbnailPath: this.saveLocation,
       tmpDir: this.saveLocation,
       percent: '25%',
     });
+
+    // return await tg.generateOneByPercent(10);
 
     return await tg.generateGif({
       fps: 0.75,
@@ -64,31 +64,34 @@ export class ThumbnailService {
     });
   }
 
-  async imgThumbnail(file: Express.Multer.File, mediaDocument: Media) {
+  async imgThumbnail(fileAbsPath: string, mediaDocument: Media) {
     const savePath = join(
       this.saveLocation,
       mediaDocument.filename + '_thumb.jpg',
     );
 
-    // Dealing with an heic
-    if (mediaDocument.path.toLowerCase().includes('.heic')) {
-      file = await heicConvert({
-        buffer: readFileSync(file.path),
-        format: 'JPEG',
-        quality: 1,
+    if (extname(mediaDocument.path.toLowerCase()) == '.heic') {
+      const buffer = await promisify(readFile)(fileAbsPath);
+      const outputBuffer = await heicConvert({
+        buffer: buffer, // the HEIC file buffer
+        format: 'JPEG', // output format
+        quality: 1, // the jpeg compression quality, between 0 and 1
       });
+      return await this.saveThumbnail(outputBuffer, savePath);
 
-      const thumbnail = await imageThumbnail(file, this.imgOptions);
-      return this.saveThumbnail(thumbnail, savePath);
+      // return imageThumbnail(hiec, this.imgOptions).then((thumbnail) => {
+      //   console.log('Saving thumbnail --', mediaDocument.filename);
+      //   return this.saveThumbnail(thumbnail, savePath);
+      // });
+    } else {
+      const thumbnail = await imageThumbnail(fileAbsPath, this.imgOptions);
+      return await this.saveThumbnail(thumbnail, savePath);
     }
-
-    const thumbnail = await imageThumbnail(file.path, this.imgOptions);
-    return this.saveThumbnail(thumbnail, savePath);
   }
 
   saveThumbnail(bufferData: Buffer, savePath: string) {
     return new Promise((resolve, reject) => {
-      writeFile(savePath, bufferData, (err) => {
+      outputFile(savePath, bufferData, (err) => {
         if (err) {
           reject(err);
         } else {
