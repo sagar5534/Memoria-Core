@@ -8,7 +8,8 @@ import { MediaDto } from '../../models/media.model';
 import { MediaRepository } from '../media/media.repository';
 import { ThumbnailService } from '../media/thumbnail.service';
 const config = require('config');
-
+const ffprobe = require('ffprobe');
+const ffprobeStatic = require('ffprobe-static');
 @Injectable()
 export class ScannerService {
   private ACCEPTED_IMAGE_TYPES = ['.PNG', '.JPG', '.HEIC'];
