@@ -4,7 +4,6 @@ import { readFile } from 'fs';
 import { outputFile } from 'fs-extra';
 import { Media, MediaDto } from 'src/models/media.model';
 import { join, extname } from 'path';
-import * as imageThumbnail from 'image-thumbnail';
 import ThumbnailGenerator from 'video-thumbnail-generator';
 const heicConvert = require('heic-convert');
 const { promisify } = require('util');
@@ -12,6 +11,7 @@ const config = require('config');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
+const sharp = require('sharp');
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
@@ -22,15 +22,8 @@ const mediaType = {
 @Injectable()
 export class ThumbnailService {
   private saveLocation: string;
-  private imgOptions: any;
 
   constructor() {
-    this.imgOptions = {
-      percentage: 25,
-      withMetadata: true,
-      responseType: 'buffer',
-      jpegOptions: { force: true, quality: 100 },
-    };
     this.saveLocation = join(config.get('storage.path'), 'media', '.thumbs');
   }
 
@@ -51,15 +44,15 @@ export class ThumbnailService {
       sourcePath: fileAbsPath,
       thumbnailPath: this.saveLocation,
       tmpDir: this.saveLocation,
-      percent: '25%',
+      percent: '50%',
     });
 
     // return await tg.generateOneByPercent(10);
 
     return await tg.generateGif({
       fps: 0.75,
-      scale: 180,
-      speedMultiple: 4,
+      scale: 200,
+      speedMultiple: 2,
       deletePalette: true,
     });
   }
@@ -73,18 +66,22 @@ export class ThumbnailService {
     if (extname(mediaDocument.path.toLowerCase()) == '.heic') {
       const buffer = await promisify(readFile)(fileAbsPath);
       const outputBuffer = await heicConvert({
-        buffer: buffer, // the HEIC file buffer
-        format: 'JPEG', // output format
-        quality: 1, // the jpeg compression quality, between 0 and 1
+        buffer: buffer,
+        format: 'JPEG',
+        quality: 1,
       });
-      return await this.saveThumbnail(outputBuffer, savePath);
+      const heic = await this.saveThumbnail(outputBuffer, savePath);
 
-      // return imageThumbnail(hiec, this.imgOptions).then((thumbnail) => {
-      //   console.log('Saving thumbnail --', mediaDocument.filename);
-      //   return this.saveThumbnail(thumbnail, savePath);
-      // });
+      const thumbnail = await sharp(heic)
+        .rotate()
+        .resize({ width: 300 })
+        .toBuffer();
+      return await this.saveThumbnail(thumbnail, savePath);
     } else {
-      const thumbnail = await imageThumbnail(fileAbsPath, this.imgOptions);
+      const thumbnail = await sharp(fileAbsPath)
+        .rotate()
+        .resize({ width: 300 })
+        .toBuffer();
       return await this.saveThumbnail(thumbnail, savePath);
     }
   }

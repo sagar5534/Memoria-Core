@@ -14,16 +14,16 @@ const ffprobeStatic = require('ffprobe-static');
 export class ScannerService {
   private ACCEPTED_IMAGE_TYPES = ['.PNG', '.JPG', '.HEIC'];
   private ACCEPTED_VIDEO_TYPES = ['.MOV', '.MP4', 'GIF'];
+  private functionIsRunning = false;
 
   constructor(
     private mediaRepository: MediaRepository,
     private thumbnailService: ThumbnailService,
   ) {
-    // this.runner();
-    this.garbageCollector();
+    this.runner();
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async runner() {
     const saveLocation = join(config.get('storage.path'), 'media');
 
@@ -112,6 +112,8 @@ export class ScannerService {
           .then(() => console.log('Record Created', '--', temp.filename));
       }
     }
+
+    this.missingThumbnailGenerator();
   }
 
   private async getFiles(dir, path = '') {
@@ -138,8 +140,8 @@ export class ScannerService {
     });
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
-  async garbageCollector() {
+  // @Cron(CronExpression.EVERY_5_MINUTES)
+  async missingThumbnailGenerator() {
     const saveLocation = join(config.get('storage.path'), 'media');
 
     const allMedia: MediaDto[] = (await this.mediaRepository.findAll()).filter(
@@ -149,6 +151,11 @@ export class ScannerService {
     );
 
     console.log('Found', allMedia.length, 'assets with missing thumbnails');
+
+    for (const media of allMedia.slice(0, 10)) {
+      media.thumbnail_path = '-';
+      this.mediaRepository.update(media._id + '', media);
+    }
 
     for (const media of allMedia) {
       const absolutePath = join(saveLocation, media.path);
@@ -177,9 +184,13 @@ export class ScannerService {
           );
         } else {
           console.error('Thumbnail Skipped', '--', media.filename);
+          media.thumbnail_path = '';
+          this.mediaRepository.update(media._id + '', media);
         }
       } catch (error) {
         console.error('Thumbnail Error: ', '--', absolutePath, '\n', error);
+        media.thumbnail_path = '';
+        this.mediaRepository.update(media._id + '', media);
       }
     }
 

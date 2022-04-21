@@ -38,7 +38,6 @@
     "ffprobe-static": "^3.0.0",
     "fs-extra": "^10.0.1",
     "heic-convert": "^1.2.4",
-    "image-thumbnail": "^1.0.14",
     "moment": "^2.29.1",
     "mongoose": "^6.1.6",
     "passport": "^0.5.2",
@@ -47,6 +46,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.2",
+    "sharp": "^0.28.3",
     "video-thumbnail-generator": "^1.1.3"
   },
   "devDependencies": {
