@@ -44,12 +44,6 @@ export class MediaController {
     }
   }
 
-  @Get('rsrc/:file')
-  findResource(@Param('file') file: string, @Res() res) {
-    //TODO: This only allows 1 level - Shouldnt be necess. just yet
-    return res.sendFile(join(config.get('storage.path'), 'media', file));
-  }
-
   @Get()
   findAll() {
     return this.mediaRepository.findAll();
@@ -123,7 +117,7 @@ export class MediaController {
         .then((savePath: string) => {
           if (savePath != null) {
             savePath = savePath.replace(
-              join(config.get('storage.path'), 'media', '\\'),
+              join(config.get('storage.path'), 'media', '/'),
               '',
             );
             media.thumbnail_path = savePath;

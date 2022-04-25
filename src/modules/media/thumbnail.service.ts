@@ -60,7 +60,7 @@ export class ThumbnailService {
   async imgThumbnail(fileAbsPath: string, mediaDocument: Media) {
     const savePath = join(
       this.saveLocation,
-      mediaDocument.filename + '_thumb.jpg',
+      mediaDocument.assetId + '_thumb.jpg',
     );
 
     if (extname(mediaDocument.path.toLowerCase()) == '.heic') {

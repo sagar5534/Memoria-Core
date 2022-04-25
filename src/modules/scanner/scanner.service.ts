@@ -14,12 +14,12 @@ const ffprobeStatic = require('ffprobe-static');
 export class ScannerService {
   private ACCEPTED_IMAGE_TYPES = ['.PNG', '.JPG', '.HEIC'];
   private ACCEPTED_VIDEO_TYPES = ['.MOV', '.MP4', 'GIF'];
-  private functionIsRunning = false;
 
   constructor(
     private mediaRepository: MediaRepository,
     private thumbnailService: ThumbnailService,
   ) {
+    // this.truncateDB();
     this.runner();
   }
 
@@ -35,12 +35,26 @@ export class ScannerService {
         return this.ACCEPTED_IMAGE_TYPES.includes(extname(image).toUpperCase());
       })
       .map((image) => {
-        const searchString = image.replace(/\.[^/.]+$/, '') + '.';
-        const livePhoto = files.find(
-          (v) =>
-            v.startsWith(searchString) &&
-            this.ACCEPTED_VIDEO_TYPES.includes(extname(v).toUpperCase()),
-        );
+        let livePhoto = null;
+
+        if (extname(image).toUpperCase() != '.PNG') {
+          const searchString = image
+            .replace(/\.[^/.]+$/, '')
+            .replace(/ *\([^)]*\) */g, '');
+          const absolutePath = join(saveLocation, image);
+          const imageMTime = statSync(absolutePath).mtime.getTime();
+
+          livePhoto = files.find((v) => {
+            const absolutePath = join(saveLocation, v);
+
+            return (
+              this.ACCEPTED_VIDEO_TYPES.includes(extname(v).toUpperCase()) &&
+              v.startsWith(searchString) &&
+              statSync(absolutePath).mtime.getTime() === imageMTime
+            );
+          });
+        }
+
         return { image, livePhoto };
       });
 
@@ -152,7 +166,7 @@ export class ScannerService {
 
     console.log('Found', allMedia.length, 'assets with missing thumbnails');
 
-    for (const media of allMedia.slice(0, 10)) {
+    for (const media of allMedia) {
       media.thumbnail_path = '-';
       this.mediaRepository.update(media._id + '', media);
     }
@@ -171,7 +185,7 @@ export class ScannerService {
 
         if (savePath != null) {
           savePath = savePath.replace(
-            join(config.get('storage.path'), 'media', '\\'),
+            join(config.get('storage.path'), 'media', '/'),
             '',
           );
           media.thumbnail_path = savePath;
@@ -195,5 +209,16 @@ export class ScannerService {
     }
 
     console.log('Done creating thumbnails');
+  }
+
+  async truncateDB() {
+    const allMedia: MediaDto[] = await this.mediaRepository.findAll();
+
+    for (const media of allMedia) {
+      media.thumbnail_path = '-';
+      this.mediaRepository.delete(media._id + '');
+    }
+
+    console.log('Truncated');
   }
 }

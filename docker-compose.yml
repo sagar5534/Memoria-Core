@@ -6,7 +6,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ~/memoria/mongo/db:/data/db  #Change if needed
+      - D:\Memoria\mongo\db:/data/db  #Change D:\Memoria to a directory on your system
     ports:
       - "27017:27017"
     restart: always
@@ -20,7 +20,7 @@ services:
     volumes:
       - '.:/app'
       - '/app/node_modules'
-      - '~/memoria:/var/lib/memoria' #Change if needed
+      - 'D:\Memoria:/var/lib/memoria' #Change D:\Memoria to a directory on your system
     expose:
       - "12480"
     restart: always
@@ -29,6 +29,7 @@ services:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - 'D:\Memoria\media:/www/data' #Change D:\Memoria to a directory on your system
     depends_on:
       - memoria
     ports:

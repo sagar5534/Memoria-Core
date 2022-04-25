@@ -19,14 +19,14 @@ export class MediaService {
     const isHidden = this.translateStrToBool(createMediaDto.isHidden);
     const isLivePhoto = this.translateStrToBool(createMediaDto.isLivePhoto);
     const path = (files as any)[0].path.replace(
-      join(config.get('storage.path'), 'media', '\\'),
+      join(config.get('storage.path'), 'media', '/'),
       '',
     );
 
     let livePhotoPath = '';
     if (isLivePhoto && files.length > 1) {
       livePhotoPath = (files as any)[1].path.replace(
-        join(config.get('storage.path'), 'media', '\\'),
+        join(config.get('storage.path'), 'media', '/'),
         '',
       );
     }

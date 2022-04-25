@@ -5,7 +5,6 @@ import { UserModule } from './modules/user/user.module';
 import { ScannerModule } from './modules/scanner/scanner.module';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -19,10 +18,6 @@ const config = require('config');
       useFactory: () => ({
         dest: join(config.get('storage.path'), 'media'),
       }),
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(config.get('storage.path'), 'media'),
-      serveRoot: '/data',
     }),
     ScheduleModule.forRoot(),
     MediaModule,
