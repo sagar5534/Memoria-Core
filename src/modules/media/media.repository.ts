@@ -11,7 +11,7 @@ export class MediaRepository {
   ) {}
 
   async findAll(): Promise<MediaDocument[]> {
-    return await this.MediaModel.find().exec();
+    return await this.MediaModel.find().sort({ modificationDate: -1 }).exec();
   }
 
   async findOne(id: string): Promise<MediaDocument> {
@@ -31,7 +31,9 @@ export class MediaRepository {
   }
 
   async findAllAssetIds(): Promise<any> {
-    const res = await this.MediaModel.find().exec();
+    const res = await this.MediaModel.find()
+      .sort({ modificationDate: -1 })
+      .exec();
     if (res) {
       return res.map((asset) => {
         return asset.assetId;

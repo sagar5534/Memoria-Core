@@ -23,7 +23,7 @@ export class Media {
   @Prop({ required: true })
   creationDate: Date;
 
-  @Prop()
+  @Prop({ required: true, index: true })
   modificationDate: Date;
 
   @Prop()
