@@ -4,7 +4,6 @@ import { readFile } from 'fs';
 import { outputFile } from 'fs-extra';
 import { Media, MediaDto } from 'src/models/media.model';
 import { join, extname } from 'path';
-import ThumbnailGenerator from 'video-thumbnail-generator';
 const heicConvert = require('heic-convert');
 const { promisify } = require('util');
 const config = require('config');
@@ -27,10 +26,13 @@ export class ThumbnailService {
     this.saveLocation = join(config.get('storage.path'), 'media', '.thumbs');
   }
 
-  async makeThumbnail(fileAbsPath: string, mediaDocument: MediaDto) {
+  async makeThumbnail(
+    fileAbsPath: string,
+    mediaDocument: MediaDto,
+  ): Promise<string | null> {
     try {
       if (mediaDocument.mediaType == mediaType.video) {
-        return await this.videoThumbnail(fileAbsPath);
+        return await this.videoThumbnail(fileAbsPath, mediaDocument);
       } else {
         return await this.imgThumbnail(fileAbsPath, mediaDocument);
       }
@@ -39,25 +41,49 @@ export class ThumbnailService {
     }
   }
 
-  async videoThumbnail(fileAbsPath: string) {
-    const tg = new ThumbnailGenerator({
-      sourcePath: fileAbsPath,
-      thumbnailPath: this.saveLocation,
-      tmpDir: this.saveLocation,
-      percent: '50%',
-    });
+  async videoThumbnail(
+    fileAbsPath: string,
+    mediaDocument: Media,
+  ): Promise<string | null> {
+    const settings = {
+      count: 1,
+      folder: this.saveLocation,
+      filename: mediaDocument.assetId + '_thumb.jpg',
+    };
 
-    // return await tg.generateOneByPercent(10);
+    try {
+      const res = await this.generate(fileAbsPath, settings);
+      return join(this.saveLocation, res.pop());
+    } catch (err) {
+      return null;
+    }
+  }
 
-    return await tg.generateGif({
-      fps: 0.75,
-      scale: 200,
-      speedMultiple: 2,
-      deletePalette: true,
+  async generate(fileAbsPath, settings): Promise<string[] | null> {
+    // eslint-disable-next-line no-var
+    var filenameArray: string[] = [];
+
+    return await new Promise((resolve, reject) => {
+      function complete() {
+        resolve(filenameArray);
+      }
+
+      function filenames(fns) {
+        filenameArray = fns;
+      }
+
+      ffmpeg(fileAbsPath)
+        .on('filenames', filenames)
+        .on('end', complete)
+        .on('error', reject)
+        .screenshots(settings);
     });
   }
 
-  async imgThumbnail(fileAbsPath: string, mediaDocument: Media) {
+  async imgThumbnail(
+    fileAbsPath: string,
+    mediaDocument: Media,
+  ): Promise<string | null> {
     const savePath = join(
       this.saveLocation,
       mediaDocument.assetId + '_thumb.jpg',
@@ -70,9 +96,9 @@ export class ThumbnailService {
         format: 'JPEG',
         quality: 1,
       });
-      const heic = await this.saveThumbnail(outputBuffer, savePath);
+      // const heic = await this.saveThumbnail(outputBuffer, savePath);
 
-      const thumbnail = await sharp(heic)
+      const thumbnail = await sharp(outputBuffer)
         .rotate()
         .resize({ width: 300 })
         .toBuffer();
@@ -86,7 +112,7 @@ export class ThumbnailService {
     }
   }
 
-  saveThumbnail(bufferData: Buffer, savePath: string) {
+  saveThumbnail(bufferData: Buffer, savePath: string): Promise<string | null> {
     return new Promise((resolve, reject) => {
       outputFile(savePath, bufferData, (err) => {
         if (err) {

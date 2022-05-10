@@ -30,6 +30,12 @@ export class MediaRepository {
     }).exec();
   }
 
+  async MissingThumbnail(): Promise<MediaDocument[]> {
+    return await this.MediaModel.find({ thumbnail_path: '' })
+      .sort({ modificationDate: -1, mediaType: 1 })
+      .exec();
+  }
+
   async findAllAssetIds(): Promise<any> {
     const res = await this.MediaModel.find()
       .sort({ modificationDate: -1 })
