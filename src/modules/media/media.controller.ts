@@ -25,6 +25,8 @@ const config = require('config');
 
 @Controller('media')
 export class MediaController {
+  private saveLocation = join(config.get('storage.path'), 'media');
+
   constructor(
     private mediaRepository: MediaRepository,
     private thumbnailService: ThumbnailService,
@@ -112,8 +114,9 @@ export class MediaController {
       res.status(HttpStatus.OK).send();
 
       //Make Thumbnail
+      const absolutePath = join(this.saveLocation, saved.path);
       this.thumbnailService
-        .makeThumbnail(files[0].path, media)
+        .makeThumbnail(absolutePath, saved)
         .then((savePath: string) => {
           if (savePath != null) {
             savePath = savePath.replace(

@@ -21,6 +21,7 @@ async function bootstrap() {
 async function checkStoragePaths() {
   const storagePaths = [
     join(config.get('storage.path'), 'media'),
+    join(config.get('storage.path'), 'media', 'Mobile Uploads'),
     join(config.get('storage.path'), 'media', '.thumbs'),
   ];
 

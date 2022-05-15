@@ -4,6 +4,7 @@ import { readFile } from 'fs';
 import { outputFile } from 'fs-extra';
 import { Media, MediaDto } from 'src/models/media.model';
 import { join, extname } from 'path';
+import { randomBytes } from 'crypto';
 const heicConvert = require('heic-convert');
 const { promisify } = require('util');
 const config = require('config');
@@ -15,8 +16,8 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
 const mediaType = {
-  photo: 0,
-  video: 1,
+  photo: 1,
+  video: 2,
 };
 @Injectable()
 export class ThumbnailService {
@@ -30,6 +31,7 @@ export class ThumbnailService {
     fileAbsPath: string,
     mediaDocument: MediaDto,
   ): Promise<string | null> {
+    console.log(fileAbsPath, mediaDocument);
     try {
       if (mediaDocument.mediaType == mediaType.video) {
         return await this.videoThumbnail(fileAbsPath, mediaDocument);
@@ -48,7 +50,7 @@ export class ThumbnailService {
     const settings = {
       count: 1,
       folder: this.saveLocation,
-      filename: mediaDocument.assetId + '_thumb.jpg',
+      filename: randomBytes(20).toString('hex') + '_thumb.jpg',
     };
 
     try {
@@ -86,7 +88,7 @@ export class ThumbnailService {
   ): Promise<string | null> {
     const savePath = join(
       this.saveLocation,
-      mediaDocument.assetId + '_thumb.jpg',
+      randomBytes(20).toString('hex') + '_thumb.jpg',
     );
 
     if (extname(mediaDocument.path.toLowerCase()) == '.heic') {

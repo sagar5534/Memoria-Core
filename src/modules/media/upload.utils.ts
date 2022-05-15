@@ -9,7 +9,7 @@ export const editDestination = (
   file: Express.Multer.File,
   callback: Callback,
 ) => {
-  callback(null, join(config.get('storage.path'), 'media'));
+  callback(null, join(config.get('storage.path'), 'media', 'Mobile Uploads'));
 };
 
 export const editFileName = (

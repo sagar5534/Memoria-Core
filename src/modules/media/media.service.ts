@@ -47,7 +47,7 @@ export class MediaService {
       path: path,
       thumbnail_path: '',
       livePhoto_path: livePhotoPath,
-      source: createMediaDto.filename,
+      source: createMediaDto.source,
     };
 
     return temp;

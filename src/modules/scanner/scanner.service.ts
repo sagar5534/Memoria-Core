@@ -84,7 +84,7 @@ export class ScannerService {
           path: image,
           thumbnail_path: '',
           livePhoto_path: livePhoto ?? '',
-          mediaType: 0,
+          mediaType: 1,
           source: 'LOCAL',
         };
 
@@ -116,7 +116,7 @@ export class ScannerService {
           thumbnail_path: '',
           livePhoto_path: '',
           duration,
-          mediaType: 1,
+          mediaType: 2,
           source: 'LOCAL',
         };
 
